@@ -4,7 +4,7 @@ ros:
   node:
     name: truck_viewer
 app:
-  clock_rate: 30
+  clock_rate: 60
   surface:
     width: 640
     height: 480
