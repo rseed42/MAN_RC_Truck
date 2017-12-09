@@ -40,6 +40,13 @@ sensor:
     framerate_avg_count: 15
     width: 640
     height: 480
+  distance:
+    forward:
+      framerate_avg_count: 15
+      topic: /distance/forward
+    backward:
+      framerate_avg_count: 15
+      topic: /distance/backward
 
 control:
   msg_queue_size: 10

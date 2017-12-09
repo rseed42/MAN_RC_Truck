@@ -7,7 +7,7 @@ import pygame.surfarray as surfarray
 
 
 class App:
-    def __init__(self, configuration, image_sensor, controller):
+    def __init__(self, configuration, image_sensor, controller, forward_distance_sensor, backward_distance_sensor):
         self.cfg = configuration
         self._running = True
         self._display_surf = None
@@ -15,6 +15,8 @@ class App:
         self.clock = pygame.time.Clock()
         # Sensors
         self.image_sensor = image_sensor
+        self.forward_distance_sensor = forward_distance_sensor
+        self.backward_distance_sensor = backward_distance_sensor
         self.controller = controller
 
     def on_init(self):
@@ -55,11 +57,15 @@ class App:
         # Render the image and all information on this frame
         surfarray.blit_array(self._display_surf, self.image_sensor.last_image)
 
-        self.show_text('image fps: %.1f' % self.image_sensor.average_framerate, 0, 0)
+        self.show_text('FPS image: %.1f ' % self.image_sensor.average_framerate, 0, 0)
+        self.show_text(' distance: %.1f ' % self.forward_distance_sensor.average_framerate, 140, 0)
+
+        self.show_text('forward: {:06.2f} cm '.format(self.forward_distance_sensor.last_value), 0, 30)
+        self.show_text('backward: {:06.2f} cm'.format(self.backward_distance_sensor.last_value), 170, 30)
 
         # Show all control values
         def show_signal((index, (name, channel))):
-            self.show_text('{}: {}'.format(name, channel.signal), 0, 30 + 15*index)
+            self.show_text('{}: {}'.format(name, channel.signal), 0, 50 + 15*index)
         map(show_signal, enumerate(self.controller.channels.items()))
 
         # Update the surface after we have applied all drawing operations
