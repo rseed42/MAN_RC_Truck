@@ -24,8 +24,10 @@ TOPIC_SHIFT = '/controller/shift'
 TOPIC_LEG = '/controller/leg'
 TOPIC_IMAGE = '/raspicam_node/image/compressed'
 
-IMAGE_WIDTH = 308
-IMAGE_HEIGHT = 410
+# IMAGE_WIDTH = 600
+IMAGE_WIDTH = 800
+# IMAGE_HEIGHT = 800
+IMAGE_HEIGHT = 600
 
 CLOCK_RATE = 60
 THROTTLE_DEFAULT = 1500
@@ -104,7 +106,7 @@ class App:
         self.last_time = time.time()
         self.image_counter = 0
         self.bridge = CvBridge()
-        self.last_image = np.zeros((IMAGE_WIDTH, IMAGE_HEIGHT, 3))
+        self.last_image = np.zeros((IMAGE_WIDTH, IMAGE_HEIGHT, 3), dtype=np.uint8)
 
     def image_callback(self, image):
         # Calculate the frame rate
@@ -120,7 +122,8 @@ class App:
 
         # Get the image
         try:
-            self.last_image = self.bridge.compressed_imgmsg_to_cv2(image, "bgr8")
+            image_array = self.bridge.compressed_imgmsg_to_cv2(image, desired_encoding="passthrough")
+            self.last_image = cv2.rotate(image_array, cv2.ROTATE_90_COUNTERCLOCKWISE)
         except CvBridgeError as err:
             print err
 
