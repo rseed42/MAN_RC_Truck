@@ -131,10 +131,8 @@ class App:
         rospy.init_node('publisher', anonymous=True)
 
     def show_text(self, msg, left, right):
-        # text = self.font.render(msg, True, self.text_color)
         text = self.font.render(msg, True, self.text_color, (75, 75, 75))
         self._display_surf.blit(text, (left, right))
-    #        pygame.display.flip()
 
     def on_event(self, event):
         if event.type == pygame.KEYUP:
