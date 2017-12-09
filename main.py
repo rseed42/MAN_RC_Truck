@@ -24,10 +24,12 @@ TOPIC_SHIFT = '/controller/shift'
 TOPIC_LEG = '/controller/leg'
 TOPIC_IMAGE = '/raspicam_node/image/compressed'
 
-# IMAGE_WIDTH = 600
-IMAGE_WIDTH = 800
-# IMAGE_HEIGHT = 800
-IMAGE_HEIGHT = 600
+FRAMERATE_AVG_COUNT = 15
+
+IMAGE_WIDTH = 640
+IMAGE_HEIGHT = 480
+#IMAGE_WIDTH = 800
+#IMAGE_HEIGHT = 600
 
 CLOCK_RATE = 60
 THROTTLE_DEFAULT = 1500
@@ -77,11 +79,55 @@ def producer():
         pub.publish(msg)
         rate.sleep()
         rate = rospy.Rate(random.uniform(0.1, 1))
+
+# ------------------------------------------------------------------------------
+# Camera Sensor
+# ------------------------------------------------------------------------------
+class ImageSensor:
+    def __init__(self, framerate_avg_count):
+        # Over how many frames back to calculate the moving average
+        self._framerate_avg_count = framerate_avg_count
+        self.average_framerate = 0
+        # Used to measure frame length duration
+        self.last_time = 0
+        self.image_counter = 0L
+        self.bridge = CvBridge()
+        self.last_image = np.zeros((IMAGE_WIDTH, IMAGE_HEIGHT, 3), dtype=np.uint8)
+
+    def register(self, topic):
+        self._sub = rospy.Subscriber(TOPIC_IMAGE, CompressedImage, self.on_image_update)
+        self.last_time = time.time()
+
+    def on_image_update(self, message_data):
+        """
+        Fetch the image from the topic and calculate the average frame rate
+        :param message_data:
+        :return:
+        """
+        # Get the image
+        try:
+            # The image should be already encoded as rgb8, we pass through to avoid costly recomputing
+            image_array = self.bridge.compressed_imgmsg_to_cv2(message_data, desired_encoding="passthrough")
+            # For some reason the cv2 transformation rotates the image, haven't figured out why yet
+            self.last_image = cv2.rotate(image_array, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        except CvBridgeError as err:
+            print err
+
+        # Calculate the frame rate
+        self.image_counter += 1
+        now = time.time()
+        frame_duration = now - self.last_time
+        framerate = 1./frame_duration
+        # Calculate the average framerate from the latest update
+        self.average_framerate = self.average_framerate + float(framerate - self.average_framerate)/(self.image_counter + 1)
+        # End of this frame
+        self.last_time = now
+
 # ------------------------------------------------------------------------------
 # App
 # ------------------------------------------------------------------------------
 class App:
-    def __init__(self, width, height):
+    def __init__(self, width, height, image_sensor):
         self._running = True
         self._display_surf = None
         self.width = width
@@ -100,33 +146,36 @@ class App:
         self.shift_pub = rospy.Publisher(TOPIC_SHIFT, UInt32, queue_size=MSG_QUEUE_SIZE)
         self.leg_pub = rospy.Publisher(TOPIC_LEG, UInt32, queue_size=MSG_QUEUE_SIZE)
 
-        self.image_sub = rospy.Subscriber(TOPIC_IMAGE, CompressedImage, self.image_callback)
 
-        self.framerate_smooth = 0
-        self.last_time = time.time()
-        self.image_counter = 0
-        self.bridge = CvBridge()
-        self.last_image = np.zeros((IMAGE_WIDTH, IMAGE_HEIGHT, 3), dtype=np.uint8)
+        self.image_sensor = image_sensor
 
-    def image_callback(self, image):
-        # Calculate the frame rate
-        self.image_counter += 1
-        now = time.time()
-        delta = now - self.last_time
-        framerate = 1./delta
-        self.framerate_smooth = self.framerate_smooth + float(framerate - self.framerate_smooth)/(self.image_counter+1)
-        self.last_time = now
+        # self.image_sub = rospy.Subscriber(TOPIC_IMAGE, CompressedImage, self.image_callback)
+        #
+        # self.framerate_smooth = 0
+        # self.last_time = time.time()
+        # self.image_counter = 0
+        # self.bridge = CvBridge()
+        # self.last_image = np.zeros((IMAGE_WIDTH, IMAGE_HEIGHT, 3), dtype=np.uint8)
 
-        if self.image_counter % 30 == 0:
-            print 'Image Framerate: {}'.format(self.framerate_smooth)
-
-        # Get the image
-        try:
-            image_array = self.bridge.compressed_imgmsg_to_cv2(image, desired_encoding="passthrough")
-            self.last_image = cv2.rotate(image_array, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        except CvBridgeError as err:
-            print err
-
+#    def image_callback(self, image):
+#        # Calculate the frame rate
+#        self.image_counter += 1
+#        now = time.time()
+#        delta = now - self.last_time
+#        framerate = 1./delta
+#        self.framerate_smooth = self.framerate_smooth + float(framerate - self.framerate_smooth)/(self.image_counter+1)
+#        self.last_time = now
+#
+#        if self.image_counter % 30 == 0:
+#            print 'Image Framerate: {}'.format(self.framerate_smooth)
+#
+#        # Get the image
+#        try:
+#            image_array = self.bridge.compressed_imgmsg_to_cv2(image, desired_encoding="passthrough")
+#            self.last_image = cv2.rotate(image_array, cv2.ROTATE_90_COUNTERCLOCKWISE)
+#        except CvBridgeError as err:
+#            print err
+#
 
     def on_init(self):
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
@@ -200,12 +249,13 @@ class App:
     def on_render(self):
         self._display_surf.fill(self.screen_color)
 
-        surfarray.blit_array(self._display_surf, self.last_image)
-
-        self.show_text('throttle: %d' % self.throttle, 10, 10)
-        self.show_text('steering: %d' % self.steering, 10, 30)
-        self.show_text('shift: %d' % self.shift, 10, 50)
-        self.show_text('leg: %d' % self.leg, 10, 70)
+        # Render the image and all information on this frame
+        surfarray.blit_array(self._display_surf, self.image_sensor.last_image)
+        self.show_text('image fps: %.1f' % self.image_sensor.average_framerate, 0, 0)
+        self.show_text('throttle: %d' % self.throttle, 20, 20)
+        self.show_text('steering: %d' % self.steering, 20, 40)
+        self.show_text('shift: %d' % self.shift, 20, 60)
+        self.show_text('leg: %d' % self.leg, 20, 80)
 
         pygame.display.flip()
 
@@ -231,5 +281,11 @@ class App:
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
     pygame.init()
-    app = App(IMAGE_WIDTH, IMAGE_HEIGHT)
+
+    # Create and register sensors. They start receiving messages as soon as they are registered
+    image_sensor = ImageSensor(FRAMERATE_AVG_COUNT)
+    image_sensor.register(TOPIC_IMAGE)
+
+
+    app = App(IMAGE_WIDTH, IMAGE_HEIGHT, image_sensor)
     app.on_execute()
