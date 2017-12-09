@@ -116,12 +116,12 @@ class ThrottleChannel(ControlChannel):
 
     def on_key_increase_pressed(self):
         self.last_signal = self.signal
-        self.signal = 1400
+        self.signal = 1350
         self._send()
 
     def on_key_decrease_pressed(self):
         self.last_signal = self.signal
-        self.signal = 1600
+        self.signal = 1700
         self._send()
 
 
@@ -140,6 +140,32 @@ class SteeringChannel(ControlChannel):
     def on_key_decrease_pressed(self):
         self.last_signal = self.signal
         self.signal = 1800
+        self._send()
+
+    def on_key_increase_down(self):
+        self.signal = self.last_signal + 500
+        self.last_signal = self.signal
+        self._send()
+
+    def on_key_decrease_down(self):
+        self.signal = self.last_signal - 500
+        self.last_signal = self.signal
+        self._send()
+
+
+class ShiftChannel(ControlChannel):
+    """
+    Using just one speed with the throttle, as slow as possible
+    """
+    def __init__(self, default, key_increase, key_decrease):
+        super(ShiftChannel, self).__init__(default, key_increase, key_decrease)
+
+    def on_key_increase_pressed(self):
+        self.last_signal = self.signal
+        self._send()
+
+    def on_key_decrease_pressed(self):
+        self.last_signal = self.signal
         self._send()
 
 
