@@ -13,10 +13,13 @@ import pygame.surfarray as surfarray
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
+import yaml
+import attrdict
 
 # ------------------------------------------------------------------------------
 # Configuration
 # ------------------------------------------------------------------------------
+CONFIG_FILE_NAME = 'config.yml'
 MSG_QUEUE_SIZE = 10
 TOPIC_THROTTLE = '/controller/throttle'
 TOPIC_STEERING = '/controller/steering'
@@ -280,6 +283,20 @@ class App:
 # Main
 # ------------------------------------------------------------------------------
 if __name__ == '__main__':
+    try:
+        with open(CONFIG_FILE_NAME, 'r') as fp:
+            configuration = attrdict.AttrDict(yaml.load(fp))
+    except yaml.YAMLError as err:
+        sys.stderr.write('Error parsing config file {}:\n'.format(CONFIG_FILE_NAME))
+        sys.stderr.write(str(err) + '\n')
+        sys.exit(1)
+    except IOError as err:
+        sys.stderr.write('Could not find the configuration file "{}"\n'.format(CONFIG_FILE_NAME))
+        sys.exit(1)
+
+    print configuration.app.name
+    sys.exit(0)
+
     pygame.init()
 
     # Create and register sensors. They start receiving messages as soon as they are registered
