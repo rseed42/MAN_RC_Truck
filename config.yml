@@ -1,3 +1,59 @@
 ---
+# Use underscores for all properties, because they are automatically converted to Python attributes
+ros:
+  node:
+    name: truck_viewer
 app:
-  name: Truck Controller
+  clock_rate: 30
+  surface:
+    width: 640
+    height: 480
+    font: monospace
+    font_size: 15
+    screen_color:
+      - 0
+      - 0
+      - 0
+text:
+  default:
+    color:
+      - 255
+      - 255
+      - 255
+    background_color:
+      - 75
+      - 75
+      - 75
+
+name: Truck Controller
+
+topic:
+  camera:
+    compressed: /raspicam_node/image/compressed
+  steering: /controller/steering
+  throttle: /controller/throttle
+  shift: /controller/shift
+  leg: /controller/leg
+
+sensor:
+  image:
+    framerate_avg_count: 15
+    width: 640
+    height: 480
+
+control:
+  msg_queue_size: 10
+  pulse_min: 1000
+  pulse_max: 2000
+  throttle:
+    default: 1500
+    increment: 5
+  steering:
+    default: 1500
+    increment: 5
+  shift:
+    default: 1500
+    increment: 5
+  leg:
+    default: 1500
+    increment: 5
