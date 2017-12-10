@@ -50,9 +50,11 @@ sensor:
   distance:
     forward:
       framerate_avg_count: 15
+      expected_distance_framerate: 30
       topic: /distance/forward
     backward:
       framerate_avg_count: 15
+      expected_distance_framerate: 30
       topic: /distance/backward
 
 control:
