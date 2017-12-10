@@ -29,8 +29,10 @@ class App:
         # Return true if everything went well, otherwise we have to abort the application
         return True
 
-    def show_text(self, msg, x, y):
-        text = self.font.render(msg, True, self.cfg.text.default.color, self.cfg.text.default.background_color)
+    def show_text(self, msg, x, y, background_color=None):
+        if not background_color:
+            background_color = self.cfg.text.default.background_color
+        text = self.font.render(msg, True, self.cfg.text.default.color, background_color)
         self._display_surf.blit(text, (x, y))
 
     def on_event(self, event):
@@ -60,13 +62,20 @@ class App:
         self.show_text('FPS image: %.1f ' % self.image_sensor.average_framerate, 0, 0)
         self.show_text(' distance: %.1f ' % self.forward_distance_sensor.average_framerate, 140, 0)
 
-        self.show_text('forward: {:06.2f} cm '.format(self.forward_distance_sensor.last_value), 0, 30)
-        self.show_text('backward: {:06.2f} cm'.format(self.backward_distance_sensor.last_value), 170, 30)
+
+        self.show_text('forward: {:06.2f} cm '.format(self.forward_distance_sensor.last_value), 0, 15, background_color=self.cfg.text.data.background_color)
+        self.show_text('backward: {:06.2f} cm'.format(self.backward_distance_sensor.last_value), 170, 15, background_color=self.cfg.text.data.background_color)
 
         # Show all control values
-        def show_signal((index, (name, channel))):
-            self.show_text('{}: {}'.format(name, channel.signal), 0, 50 + 15*index)
-        map(show_signal, enumerate(self.controller.channels.items()))
+        control_y = self._display_surf.get_height() - 15
+        # Need to abbreviate on smaller displays
+#        def show_signal((index, (name, channel))):
+#            self.show_text('{}: {}'.format(name, channel.signal), index*110, control_y)
+#        map(show_signal, enumerate(reversed(sorted(self.controller.channels.items()))))
+        self.show_text('{}: {} '.format("trtl", self.controller.channels['throttle'].signal), 0, control_y)
+        self.show_text('{}: {} '.format("steer", self.controller.channels['steering'].signal), 100, control_y)
+        self.show_text('{}: {} '.format("shift", self.controller.channels['shift'].signal), 210, control_y)
+        self.show_text('{}: {}'.format("leg", self.controller.channels['leg'].signal), 320, control_y)
 
         # Update the surface after we have applied all drawing operations
         pygame.display.flip()

@@ -26,6 +26,11 @@ text:
       - 75
       - 75
       - 75
+  data:
+    background_color:
+      - 50
+      - 50
+      - 175
 
 name: Truck Controller
 
