@@ -9,8 +9,7 @@ from sensor_msgs.msg import Range
 class DistanceSensor:
     def __init__(self, configuration):
         # Over how many frames back to calculate the moving average
-        # self._framerate_avg_count = configuration.framerate_avg_count
-        self._framerate_avg_count = 15
+        self._framerate_avg_count = configuration.framerate_avg_count
         self.average_framerate = 0
         # Used to measure frame length duration
         self.last_time = 0
