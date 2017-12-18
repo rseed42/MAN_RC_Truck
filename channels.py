@@ -76,7 +76,7 @@ class SteeringChannel(ControlChannel):
 
     def on_key_increase_pressed(self):
         self.last_signal = self.signal
-        self.signal = 1200
+        self.signal = 1000
         self._send()
 
     def on_key_decrease_pressed(self):

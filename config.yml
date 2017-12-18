@@ -4,12 +4,12 @@ ros:
   node:
     name: truck_viewer
 app:
-  clock_rate: 60
+  clock_rate: 30
   surface:
-    width: 640
-    height: 480
-#    width: 410
-#    height: 308
+#    width: 640
+#    height: 480
+    width: 410
+    height: 308
     font: monospace
     font_size: 15
     screen_color:
@@ -65,7 +65,7 @@ control:
     default: 1500
     increment: 5
   steering:
-    default: 1500
+    default: 1400
     increment: 5
   shift:
     default: 1500
