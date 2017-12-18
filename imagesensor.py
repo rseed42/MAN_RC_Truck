@@ -1,5 +1,6 @@
 import time
 import cv2
+import cv2.aruco as aruco
 import numpy as np
 import rospy
 from sensor_msgs.msg import CompressedImage
@@ -21,6 +22,8 @@ class ImageSensor:
         self.bridge = CvBridge()
         self.last_image = np.zeros((configuration.sensor.image.width, configuration.sensor.image.height, 3), dtype=np.uint8)
         self._sub = None
+        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
+        self.aruco_parameters =  aruco.DetectorParameters_create()
 
     def register(self, topic):
         self._sub = rospy.Subscriber(topic, CompressedImage, self.on_image_update)
@@ -36,8 +39,12 @@ class ImageSensor:
         try:
             # The image should be already encoded as rgb8, we pass through to avoid costly recomputing
             image_array = self.bridge.compressed_imgmsg_to_cv2(message_data, desired_encoding="passthrough")
+            image_array = cv2.rotate(image_array, cv2.ROTATE_90_CLOCKWISE)
+            image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
+            image_array_gray = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
+            corners, ids, rejectedImgPoints = aruco.detectMarkers(image_array_gray, self.aruco_dict, parameters=self.aruco_parameters)
             # For some reason the cv2 transformation rotates the image, haven't figured out why yet
-            self.last_image = cv2.rotate(image_array, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            self.last_image = aruco.drawDetectedMarkers(image_array, corners)
         except CvBridgeError as err:
             print err
 

@@ -6,10 +6,10 @@ ros:
 app:
   clock_rate: 60
   surface:
-#    width: 640
-#    height: 480
-    width: 410
-    height: 308
+    width: 640
+    height: 480
+#    width: 410
+#    height: 308
     font: monospace
     font_size: 15
     screen_color:
