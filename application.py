@@ -58,20 +58,6 @@ class App:
             corners = self.image_sensor.corners
             aruco_center_coord = corners[0][0].mean(axis=0)[1]
             image_center_coord = (self.cfg.sensor.image.width / 2.)
-            #K_THRESH = 20
-            #print("aruco_center", aruco_center_coord)
-            #print("image_center", image_center_coord)
-            #if (aruco_center_coord - image_center_coord) < 0:
-                #print("right")
-            #    self.controller.turn_right()
-            #elif (aruco_center_coord - image_center_coord) > 0:
-                #print("left")
-                #self.controller.turn_left()
-            #else:
-                #print("straight")
-                #self.controller.straight()
-            
-            # calculate location (0 = left, 1 = right)
             loc = aruco_center_coord / (image_center_coord * 2)
             self.controller.on_adaptive(location = loc)
         except:
