@@ -61,7 +61,7 @@ class App:
             loc = aruco_center_coord / (image_center_coord * 2)
             self.controller.on_adaptive(location = loc)
         except:
-            print("no code found -> dont move")
+            print("[WARN]: No ArUco code")
             self.controller.neutral()
             return
 
@@ -79,7 +79,7 @@ class App:
             else:
                 self.controller.neutral()
         except:
-            print("throttle error")
+            print("[WARN]: Throttle error")
         
 
     def on_render(self):

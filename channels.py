@@ -106,7 +106,7 @@ class SteeringChannel(ControlChannel):
         self.last_signal = self.signal
         K_FACTOR = 2
         adaptive_signal = int(1400 - 800 * K_FACTOR * (location - 0.5))
-        print(adaptive_signal)
+        #print("[INFO]: Steering input value ", adaptive_signal)
         self.signal = adaptive_signal
         self._send()
 
