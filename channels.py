@@ -11,7 +11,7 @@ class ControlChannel(object):
     Base class for control signals. By default nothing changes. Subclass to override channel's behaviour
     """
     def __init__(self, default, key_increase, key_decrease):
-        # Used to filter out the signals
+        # Used to filter out the signalss
         self.key_increase = key_increase
         self.key_decrease = key_decrease
         self.default = default
