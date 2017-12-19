@@ -21,6 +21,7 @@ class ImageSensor:
         self.image_counter = 0L
         self.bridge = CvBridge()
         self.last_image = np.zeros((configuration.sensor.image.width, configuration.sensor.image.height, 3), dtype=np.uint8)
+        self.corners = np.zeros((1, 4, 2), dtype=np.float32)
         self._sub = None
         self.aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
         self.aruco_parameters =  aruco.DetectorParameters_create()
@@ -43,6 +44,7 @@ class ImageSensor:
             image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
             image_array_gray = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
             corners, ids, rejectedImgPoints = aruco.detectMarkers(image_array_gray, self.aruco_dict, parameters=self.aruco_parameters)
+            self.corners = corners
             # For some reason the cv2 transformation rotates the image, haven't figured out why yet
             self.last_image = aruco.drawDetectedMarkers(image_array, corners)
         except CvBridgeError as err:

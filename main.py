@@ -46,7 +46,7 @@ if __name__ == '__main__':
     backward_distance_sensor.register(configuration.sensor.distance.backward.topic)
 
     # Create and register the controller
-    controller = controller.HumanController(configuration)
+    controller = controller.HybridController(configuration)
     controller.register()
 
     # Initialize this application as an ROS node, otherwise we can not communicate with the ROS system

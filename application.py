@@ -51,7 +51,24 @@ class App:
         self.controller.on_key_pressed(keys)
 
     def on_loop(self):
-        pass
+        try:
+            corners = self.image_sensor.corners
+            aruco_center_coord = corners[0][0].mean(axis=0)[1]
+            image_center_coord = (self.cfg.sensor.image.width / 2.)
+            K_THRESH = 20
+            #print("aruco_center", aruco_center_coord)
+            #print("image_center", image_center_coord)
+            if (aruco_center_coord - image_center_coord) < -K_THRESH:
+                print("right")
+                self.controller.turn_right()
+            elif (aruco_center_coord - image_center_coord) > K_THRESH:
+                print("left")
+                self.controller.turn_left()
+            else:
+                print("straight")
+                self.controller.straight()
+        except:
+            print("no code found -> dont move")
 
     def on_render(self):
         self._display_surf.fill(self.cfg.app.surface.screen_color)

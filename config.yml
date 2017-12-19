@@ -45,8 +45,10 @@ topic:
 sensor:
   image:
     framerate_avg_count: 15
-    width: 640
-    height: 480
+#    width: 640
+#    height: 480
+    width: 410
+    height: 308
   distance:
     forward:
       framerate_avg_count: 15

@@ -74,14 +74,22 @@ class SteeringChannel(ControlChannel):
     def __init__(self, default, key_increase, key_decrease):
         super(SteeringChannel, self).__init__(default, key_increase, key_decrease)
 
+    # left
     def on_key_increase_pressed(self):
         self.last_signal = self.signal
         self.signal = 1000
         self._send()
 
+    # right
     def on_key_decrease_pressed(self):
         self.last_signal = self.signal
         self.signal = 1800
+        self._send()
+    
+    # no turn
+    def on_key_none(self):
+        self.last_signal = self.signal
+        self.signal = 1400
         self._send()
 
     def on_key_increase_down(self):
