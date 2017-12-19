@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FIE Truck Challenge</title>
+    <meta charset="utf-8">
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# FIE Truck Challenge
+## <a href='#'>FIEB’s Approach</a>
+### <br><br>presented by Venelin Petkov and Sebastian Schwarz
+<h3>
+from FIEB
+</h3>
+### 2017-12-20<span class="inverse" style="font-size: 60%; position: absolute; right: 100px; bottom: 12px;">use ← ↑ ↓ → to navigate</span>
+
+---
+
+
+class: inverse, center, middle
+
+# The FIEB Truck
+
+---
+background-image: url("truck_bw.jpg")
+background-size: cover
+class: center, bottom, inverse
+
+# MAN TGX 26.540 Cyclops Edition
+
+## Fully Electric, Self-Driving (at least sort of)
+
+---
+
+# Modifications
+
+.pull-left[
+
+### Adding computer and sensors
+
+- Replaced remote control unit with [Raspberry Pi 3 Model B](https://www.google.com)
+
+- Added [two ultrasonic distance sensors](https://www.google.com) (front highlighted)
+
+- Added [accelerometer](https://www.google.com)
+
+- Added [wide angle camera](https://www.google.com) (highlighted)
+
+- Added [10k mAh powerbank](https://www.google.com) to power the Raspberry
+
+- Fancy blue and black metallic paint job (done by ourselves)
+]
+
+.pull-right[
+&lt;img src="modification_bw.jpg" alt="Drawing" style="width: 350px; display: block; margin: 0 auto;"/&gt;
+]
+
+---
+class: center, middle, inverse
+
+# Hardware and Software Implementation
+
+---
+background-image: url("truck_work_bw.png")
+background-size: cover
+class: center, bottom, inverse
+
+# The Foundation
+
+## Hardware wiring, RobotOS
+
+---
+# Implementation: The Foundation
+
+### Wiring the hardware
+
+- Raspberry as drop-in replacement for the remote control receiver
+- Reverse engineering signals to be sent by Raspberry to the truck's main control unit
+- Sensors directly connected to the Raspberry
+
+### Using Robot Operating System (ROS) as main software
+
+- [ROS](http://www.ros.org/) as foundation on Raspberry and remote laptop
+- Separate subscribable topics per sensor (ultrasonic, camera, accelerometer)
+
+### Architecture and Control
+
+- Streaming of sensor data via wifi from Raspberry to remote laptop (real-time)
+- Control logic implemented on remote laptop
+- Sending controls from remote laptop to Raspberry (real-time)
+
+---
+background-image: url("truck_work_bw.png")
+background-size: cover
+class: center, bottom, inverse
+
+# The Self-Driving Logic
+
+## Python, OpenCV, ArUco markers
+
+---
+# Implementation: The Self-Driving Logic
+
+### Platooning Logic
+
+.pull-left[
+- Follow [ArUco](https://www.google.de) marker (simple 2D barcode, similar to QR-Code) detected via camera
+
+- Maintain distance to truck in front as measured by ultrasonic sensor
+
+- Features: Adaptive steering and distance, real-time [ArUco](https://www.google.de) detection
+]
+
+.pull-right[
+&lt;img src="aruco42.jpg" alt="Drawing" style="width: 350px; display: block; margin: 0 auto;"/&gt;
+]
+---
+background-image: url("demo_bw.jpg")
+background-size: cover
+class: center, bottom, inverse
+
+# Live Demo Time
+
+## Wohooo!
+
+---
+# Sidenotes
+
+### Notes
+
+- Code and slides can be found on [**github**](https://github.com/rseed42/MAN_RC_Truck)
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "monokai",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
