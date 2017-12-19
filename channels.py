@@ -64,6 +64,15 @@ class ThrottleChannel(ControlChannel):
     def on_key_decrease_pressed(self):
         self.last_signal = self.signal
         self.signal = 1700
+        #print("last signal:", self.last_signal)
+        #print("current signal:", self.signal)
+        #self.last_signal = self.signal
+        self._send()
+
+    # no throttle
+    def on_key_none(self):
+        self.last_signal = self.signal
+        self.signal = self.default
         self._send()
 
 
@@ -89,7 +98,16 @@ class SteeringChannel(ControlChannel):
     # no turn
     def on_key_none(self):
         self.last_signal = self.signal
-        self.signal = 1400
+        self.signal = self.default
+        self._send()
+
+    # adaptive
+    def on_adaptive(self, location=0.5):
+        self.last_signal = self.signal
+        K_FACTOR = 2
+        adaptive_signal = int(1400 - 800 * K_FACTOR * (location - 0.5))
+        print(adaptive_signal)
+        self.signal = adaptive_signal
         self._send()
 
     def on_key_increase_down(self):

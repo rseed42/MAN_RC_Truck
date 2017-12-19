@@ -1,4 +1,5 @@
 import pygame
+import time
 from pygame.locals import *
 import pygame.surfarray as surfarray
 # ------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ class App:
         if event.type == pygame.KEYDOWN:
             if event.key == K_q:
                 self._running = False
+                self.controller.neutral()  # emergency stop
             self.controller.on_key_down(event)
 
         if event.type == pygame.QUIT:
@@ -51,24 +53,48 @@ class App:
         self.controller.on_key_pressed(keys)
 
     def on_loop(self):
+        # look for ArUco code and determine detection
         try:
             corners = self.image_sensor.corners
             aruco_center_coord = corners[0][0].mean(axis=0)[1]
             image_center_coord = (self.cfg.sensor.image.width / 2.)
-            K_THRESH = 20
+            #K_THRESH = 20
             #print("aruco_center", aruco_center_coord)
             #print("image_center", image_center_coord)
-            if (aruco_center_coord - image_center_coord) < -K_THRESH:
-                print("right")
-                self.controller.turn_right()
-            elif (aruco_center_coord - image_center_coord) > K_THRESH:
-                print("left")
-                self.controller.turn_left()
-            else:
-                print("straight")
-                self.controller.straight()
+            #if (aruco_center_coord - image_center_coord) < 0:
+                #print("right")
+            #    self.controller.turn_right()
+            #elif (aruco_center_coord - image_center_coord) > 0:
+                #print("left")
+                #self.controller.turn_left()
+            #else:
+                #print("straight")
+                #self.controller.straight()
+            
+            # calculate location (0 = left, 1 = right)
+            loc = aruco_center_coord / (image_center_coord * 2)
+            self.controller.on_adaptive(location = loc)
         except:
             print("no code found -> dont move")
+            self.controller.neutral()
+            return
+
+        # check distance and control throttle
+        dist_forward = self.forward_distance_sensor.last_value
+        dist_backward = self.backward_distance_sensor.last_value
+        K_MIN_DIST = 10.
+        K_MAX_DIST = 30.
+        try:
+            if dist_forward < K_MIN_DIST:
+                self.controller.decelerate()
+        
+            elif dist_forward > K_MAX_DIST:
+                self.controller.accelerate()
+            else:
+                self.controller.neutral()
+        except:
+            print("throttle error")
+        
 
     def on_render(self):
         self._display_surf.fill(self.cfg.app.surface.screen_color)

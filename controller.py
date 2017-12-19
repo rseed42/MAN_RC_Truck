@@ -91,4 +91,17 @@ class HybridController:
 
     def straight(self):
         self.channels['steering'].on_key_none()
+
+    def on_adaptive(self, location=0.5):
+        self.channels['steering'].on_adaptive(location=location)
+    
+    # simple with throttle signals
+    def accelerate(self):
+        self.channels['throttle'].on_key_increase_pressed()
+    
+    def decelerate(self):
+        self.channels['throttle'].on_key_decrease_pressed()
+
+    def neutral(self):
+        self.channels['throttle'].on_key_none()
     
