@@ -31,7 +31,7 @@ RUN apt-get update \
         python3-pip \
         && rm -rf /var/lib/apt/lists/*
  
-# build
+# Build openCV
 RUN git clone https://github.com/opencv/opencv.git \
     && git clone https://github.com/opencv/opencv_contrib.git \
     && mkdir opencv/release \
@@ -49,7 +49,7 @@ RUN git clone https://github.com/opencv/opencv.git \
     && rm -rf opencv \
     && rm -rf opencv_contrib
   
-# Install necessary python packages
+# Install necessary python packages for main application
 RUN pip install \
         pygame \
         attrdict \
