@@ -5,7 +5,22 @@ WORKDIR /home/ros
 # Install necessary packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+	libdc1394-22-dev \
+	libjasper-dev \
+	libjpeg-dev \
+	libpng-dev \
+	libtbb-dev \
+	libtiff-dev \
+	ros-lunar-cv-bridge \
+        build-essential \
+        cmake \
         git \
+        libavcodec-dev \
+        libavformat-dev \
+        libgtk2.0-dev \
+        libswscale-dev \
+        libtbb2 \
+        pkg-config \
         python \
         python-dev \
         python-numpy \
@@ -14,21 +29,6 @@ RUN apt-get update \
         python3-dev \
         python3-numpy \
         python3-pip \
-        build-essential \
-        cmake \
-        libgtk2.0-dev \
-        pkg-config \
-        libavcodec-dev \
-        libavformat-dev \
-        libswscale-dev \
-        libtbb2 \
-	libtbb-dev \
-	libjpeg-dev \
-	libpng-dev \
-	libtiff-dev \
-	libjasper-dev \
-	libdc1394-22-dev \
-	ros-lunar-cv-bridge \
         && rm -rf /var/lib/apt/lists/*
  
 # build
