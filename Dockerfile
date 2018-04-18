@@ -1,17 +1,17 @@
 FROM ros:lunar
 LABEL maintainer "Sebastian Schwarz <sebastian.schwarz.b@man.eu>"
 WORKDIR /home/ros
- 
+
 # Install necessary packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-	libdc1394-22-dev \
-	libjasper-dev \
-	libjpeg-dev \
-	libpng-dev \
-	libtbb-dev \
-	libtiff-dev \
-	ros-lunar-cv-bridge \
+        libdc1394-22-dev \
+        libjasper-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libtbb-dev \
+        libtiff-dev \
+        ros-lunar-cv-bridge \
         build-essential \
         cmake \
         git \
@@ -30,7 +30,7 @@ RUN apt-get update \
         python3-numpy \
         python3-pip \
         && rm -rf /var/lib/apt/lists/*
- 
+
 # Build openCV
 RUN git clone https://github.com/opencv/opencv.git \
     && git clone https://github.com/opencv/opencv_contrib.git \
@@ -48,7 +48,7 @@ RUN git clone https://github.com/opencv/opencv.git \
     && cd ../.. \
     && rm -rf opencv \
     && rm -rf opencv_contrib
-  
+
 # Install necessary python packages for main application
 RUN pip install \
         pygame \
