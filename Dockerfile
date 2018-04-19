@@ -57,9 +57,11 @@ RUN pip install \
         attrdict \
     && git clone https://github.com/rseed42/MAN_RC_Truck.git
 
-RUN mkdir /app
-COPY *.py /app/
-COPY config.yml /app/
+# RUN mkdir /app
+# COPY *.py /app/
+# COPY config.yml /app/
+COPY ./app /app/
+
 COPY entrypoint.sh /
 
 WORKDIR /app
