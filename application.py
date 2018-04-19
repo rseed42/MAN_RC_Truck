@@ -74,14 +74,13 @@ class App:
         try:
             if dist_forward < K_MIN_DIST:
                 self.controller.decelerate()
-        
+
             elif dist_forward > K_MAX_DIST:
                 self.controller.accelerate()
             else:
                 self.controller.neutral()
         except:
             print("[WARN]: Throttle problem")
-        
 
     def on_render(self):
         self._display_surf.fill(self.cfg.app.surface.screen_color)
