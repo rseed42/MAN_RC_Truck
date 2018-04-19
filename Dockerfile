@@ -31,10 +31,12 @@ RUN apt-get update \
         python3-pip \
         && rm -rf /var/lib/apt/lists/*
 
-# Build openCV
+# Clone OpenCV repos (takes a long time)
 RUN git clone https://github.com/opencv/opencv.git \
-    && git clone https://github.com/opencv/opencv_contrib.git \
-    && mkdir opencv/release \
+    && git clone https://github.com/opencv/opencv_contrib.git
+
+# Build openCV
+RUN mkdir opencv/release \
     && cd opencv/release \
     && cmake \
         -D CMAKE_BUILD_TYPE=RELEASE \
@@ -54,3 +56,11 @@ RUN pip install \
         pygame \
         attrdict \
     && git clone https://github.com/rseed42/MAN_RC_Truck.git
+
+RUN mkdir /app
+COPY *.py /app/
+COPY config.yml /app/
+COPY entrypoint.sh /
+
+WORKDIR /app
+ENTRYPOINT ["/entrypoint.sh"]
